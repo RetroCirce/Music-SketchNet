@@ -7,7 +7,10 @@ It contains:
 * SketchVAE converts the music meldoy tokens into the disentanglemd latent vector (z_pitch, z_rhythm)
 * SketchInpainter receives the music latent vectors to predict the missing measure vector separately in rhythm and pitch space
 * SketchConnector incorpoates a transformer encoder structure and random unmasking scheme in receiving the sketch control and finalizing the generation.
+
+<p align="center">
 <img src="figs/figure_1.png" align="center" alt="The Music Sketch Scenario" width="60%"/>
+</p>
 
 ## Score Demo
 Music SketchNet allows you to control the pitch, control the rhythm, or control both information in a music inpainting/completion scenario.
