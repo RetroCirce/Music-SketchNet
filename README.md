@@ -26,7 +26,7 @@ We provide a complete jupyter notebook tutorial/pipline to guide you into each s
 To run the code, you need to down the extra material data from this [link](https://drive.google.com/drive/folders/1xmg4ijhVJTse-V2BQ1hEBG2hQGYDQjTp?usp=sharing)
 > data.zip: all processed data npy files, if you want to go through all process, you need to download it.
 
-> IrishFolkSong.zip: if you only want to train and test three VAE structures (from 1-1 to 2-3), you only need to down this basic music midi data
+> IrishFolkSong.zip: if you only want to train and test three VAE structures (from 1-1 to 2-3), you only need to download this basic music midi data
 
 > model_backup.zip: if you only want to skip most process and test the model, you can download the saved parameters for all models we trained.
 
