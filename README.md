@@ -1,5 +1,7 @@
 # Music-SketchNet Paper Repository 
 Music SketchNet: Controllable Music Generation via Factorized Representations of Pitch and Rhythm, ISMIR 2020
+(PLEASE DOWNLOAD IT AFTER August 15th)
+(Most of codes are workable, we are doing the proof-coding)
 
 ## Intro
 Music SketchNet allows you to specify your own music ideas, namely pitch contour and rhythm, in the monophonic music generation scenario.
