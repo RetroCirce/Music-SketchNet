@@ -1,6 +1,6 @@
 # Music-SketchNet Paper Repository 
-Music SketchNet: Controllable Music Generation via Factorized Representations of Pitch and Rhythm, ISMIR 2020
-(PLEASE DOWNLOAD IT AFTER August 15th)
+Music SketchNet: Controllable Music Generation via Factorized Representations of Pitch and Rhythm, ISMIR 2020 <br>
+(PLEASE DOWNLOAD IT AFTER August 15th) <br>
 (Most of codes are workable, we are doing the proof-coding)
 
 ## Intro
