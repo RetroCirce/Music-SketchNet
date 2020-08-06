@@ -2,7 +2,7 @@
 Music SketchNet: Controllable Music Generation via Factorized Representations of Pitch and Rhythm, ISMIR 2020 <br>
 (PLEASE DOWNLOAD IT AFTER August 15th) <br>
 (Most of codes are workable, we are doing the proof-coding) <br>
-(See the samplew in this [link](https://drive.google.com/drive/folders/1CI__Tts_YUyHCjnunqyIHVrA-IasCgUq?usp=sharing).) <br>
+(Listen to the samples in this [link](https://drive.google.com/drive/folders/1CI__Tts_YUyHCjnunqyIHVrA-IasCgUq?usp=sharing).) <br>
 (We will provide a website for you to create you own sketch (--in construction--)
 
 ## Intro
