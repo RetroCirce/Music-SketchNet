@@ -27,7 +27,12 @@ class MIDI_Loader:
                 total = total + 1
         if self.datasetName == "Irish":
             for midi_file in path:
+                if not midi_file.endswith(".mid"):
+                    continue
                 temp = pyd.PrettyMIDI(directory + midi_file)
+                # useless midi file
+                if len(temp.instruments) == 0 or len(temp.instruments[0].notes) == 0:
+                    continue
                 tsc = temp.time_signature_changes
                 if len(tsc) == 1 and tsc[0].numerator == 4 and tsc[0].denominator == 4:
                     self.midi_files.append({"name": (midi_file.split("."))[0], "raw": temp})
@@ -144,15 +149,14 @@ class MIDI_Loader:
             # 128 for hold 129 for rest
             rest_pitch = 129
             hold_pitch = 128
-            c_bias=  1.0 / 960
+            c_bias = 1.0 / 960
             for i in range(len(self.midi_files)):
                 midi_data = self.midi_files[i]["raw"]
                 pitch_file = []
                 cst = midi_data.instruments[0].notes[0].start - c_bias
-                cet = midi_data.instruments[0].notes[0].end
                 # first note starts > 0
                 if cst > 0:
-                    steps = int(round((cet - cst) / self.min_step))
+                    steps = int(round(cst / self.min_step))
                     pitch_file.extend([rest_pitch] * steps)
                 cst = 0.0
                 cet = midi_data.instruments[0].notes[0].start - c_bias
@@ -226,10 +230,6 @@ class MIDI_Loader:
             output_file = []
             if midi_file.__contains__("name"):
                 output_file.append("Name: " + midi_file["name"] + "\n")
-            # if midi_file.__contains__("chords"):
-            #     output_file.append("Chord:\n")
-            #     for c in midi_file["chords"]:
-            #         output_file.append(str(c["start"]) + " " + str(c["end"])+ " " + c["chord"] + "\n")
             if midi_file.__contains__("chord_seq"):
                 output_file.append("Chord Sequence:\n")
                 for c in midi_file["chord_seq"]:
@@ -507,15 +507,13 @@ class DataLoader:
     def start_new_epoch(self, batch_size = 64):
         np.random.shuffle(self.train_set)
         np.random.shuffle(self.validate_set)
-        # np.random.shuffle(self.test_set)
+        np.random.shuffle(self.test_set)
         self.batch_idx = 0
         self.batch_size = batch_size
         self.train_batches = np.split(self.train_set,
             range(batch_size, self.train_set.shape[0] // batch_size * batch_size, batch_size))
         self.validate_batches = np.split(self.validate_set,
             range(batch_size, self.validate_set.shape[0] // batch_size * batch_size, batch_size))
-        # self.test_batches = np.split(self.test_set,
-            # range(batch_size, self.test_set.shape[0] // batch_size * batch_size, batch_size))
         print("new epoch start!")
         return self.train_batches, self.validate_batches
     def convert_onehot(self, batch_data = None):

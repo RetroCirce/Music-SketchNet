@@ -101,9 +101,7 @@ class SketchNet(nn.Module):
         if self.training and (is_teacher or not self.teacher_forcing):
             self.use_teacher = True
             gf_input = torch.cat((y, self.inpaint_x[:,:-1,:self.zp_dims]),1)
-#             print("gf_input", gf_input.size())
             gf_out,_ = self.gen_p_gru(gf_input, hxx)
-#             print("gf_output",gf_out.size())
             zs = self.gen_p_out(gf_out)
             for i in range(self.inpaint_len):
                 ys.append(zs[:,i,:])     
@@ -123,9 +121,7 @@ class SketchNet(nn.Module):
         if self.training and (is_teacher or not self.teacher_forcing):
             self.use_teacher = True
             gf_input = torch.cat((y, self.inpaint_x[:,:-1,self.zp_dims:]),1)
-#             print("gf_input", gf_input.size())
             gf_out,_ = self.gen_r_gru(gf_input, hxx)
-#             print("gf_output",gf_out.size())
             zs = self.gen_r_out(gf_out)
             for i in range(self.inpaint_len):
                 ys.append(zs[:,i,:])     
@@ -141,7 +137,6 @@ class SketchNet(nn.Module):
     
     def combine_decoder(self, past_x, inpaint_x, future_x, c_x, is_train = True):
         inpaint_sta = past_x.size(1)
-#         print("inpainting place:", inpaint_sta, inpaint_sta + self.inpaint_len)
         p = torch.rand(1).item()
         self.use_teacher = p < self.eps 
         zs = torch.cat((past_x, c_x, future_x), 1)
@@ -160,7 +155,6 @@ class SketchNet(nn.Module):
             weights += [weight]
         ys = self.combine_norm(ys)
         ys = self.combine_out(ys)
-#         print(ys.size())
         return ys[:, inpaint_sta:inpaint_sta + self.inpaint_len,:], weights
 
     def sketch_generation(self, past_x, future_x, inpaint_x, sketch_index, sketch_cond):
@@ -213,7 +207,6 @@ class SketchNet(nn.Module):
     
     def forward(self, past_x, future_x, inpaint_x):
         # order: px, rx, len_x, nrx, gd 
-#         print("inpainting Net",self.training)
         if self.training:
             self.iteration += 1
         past_x = self.get_z_seq(past_x)
@@ -232,7 +225,6 @@ class SketchNet(nn.Module):
             gen_pz = self.gen_pitch_decoder(c_p_x, init_p_gc, is_teacher)
             gen_rz = self.gen_rhythm_decoder(c_r_x, init_r_gc, is_teacher)
             gen_z = torch.cat((gen_pz, gen_rz), -1)
-#             print("gen_z size:", gen_z.size())
             gen_m = self.get_measure(gen_z)
         if self.stage == "sketch":
             init_p_gc = past_x[:, -1, :self.zp_dims]
@@ -243,7 +235,6 @@ class SketchNet(nn.Module):
             gen_pz = self.gen_pitch_decoder(c_p_x, init_p_gc, is_teacher)
             gen_rz = self.gen_rhythm_decoder(c_r_x, init_r_gc, is_teacher)
             gen_z = torch.cat((gen_pz, gen_rz), -1)
-#             print("gen_z size:", gen_z.size())
             final_z, _ = self.combine_decoder(past_x, inpaint_x, future_x, gen_z, is_train = True)
             gen_m = self.get_measure(final_z)
         return gen_m, self.iteration, self.use_teacher, self.stage
@@ -277,22 +268,18 @@ class SketchNet(nn.Module):
         # order: px, rx, len_x, nrx, gd
         px, _ , len_x, nrx, gd = x
         batch_size = px.size(0)
-        px = px.view(-1, 24)
-        nrx = nrx.view(-1, 24, 3)
+        px = px.view(-1, self.vae_model.seq_len)
+        nrx = nrx.view(-1, self.vae_model.seq_len, 3)
         len_x = len_x.view(-1) 
         p_dis = self.vae_model.pitch_encoder(px, len_x)
         r_dis = self.vae_model.rhythm_encoder(nrx)
-#         if 1 == 0: # self.train_mse:
-#             zp = p_dis.mean
-#             zr = r_dis.mean
-#         else:
         zp = p_dis.rsample()
         zr = r_dis.rsample()
         z = torch.cat((zp,zr), -1)
         z = z.view(batch_size, -1, self.zr_dims + self.zp_dims)
         return z
     def get_measure(self, z):
-        dummy = torch.zeros((z.size(0), 24)).long().cuda()
+        dummy = torch.zeros((z.size(0), self.vae_model.seq_len)).long().cuda()
         ms = []
         for i in range(self.inpaint_len):
             m = self.vae_model.final_decoder(z[:, i, :], dummy, is_train = False)

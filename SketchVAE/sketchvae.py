@@ -82,27 +82,15 @@ class SketchVAE(nn.Module):
         self.decay = torch.FloatTensor([decay])
 
     def pitch_encoder(self, px, len_x):
-#         print("pitch_encoder:")
-#         print("input_px:", px.size())
-#         print("len_x", len_x)
         px = self.p_embedding(px)
-#         print("embed_px",px.size())
         s_len_x, s_len_idx = torch.sort(len_x, descending = True)
-#         print("padding:", s_len_x)
-#         print("index", s_len_idx)
         _, re_len_idx = torch.sort(s_len_idx)
-#         print("re_idx:", re_len_idx)
         s_px = px.index_select(0, s_len_idx)
         padding_px = torch.nn.utils.rnn.pack_padded_sequence(s_px, s_len_x, batch_first = True)
-#         print("padding_px:", padding_px)
         padding_px = self.p_encoder_gru(padding_px)[-1]
-#         print("after padding:", padding_px.size())
         padding_px = padding_px.transpose(0,1).contiguous()
         padding_px = padding_px.view(padding_px.size(0), -1)
-#         n_px = padding_px
         n_px = padding_px.index_select(0, re_len_idx)
-#         print("after reindx:", px.size())
-#         print(px)
         p_mu = self.p_linear_mu(n_px)
         p_var = self.p_linear_var(n_px)
         p_dis = Normal(p_mu, p_var)
@@ -129,7 +117,6 @@ class SketchVAE(nn.Module):
             batch_size, self.beat_num, 1
         )
         beat_out, _ = self.beat_gru(beat_input, h_beat)
-#         print("beat_out",beat_out.size())
         return beat_out
     def forward_tick(self, beat_out, gd, is_train = True):
         ys = []
@@ -137,45 +124,34 @@ class SketchVAE(nn.Module):
         tick_input = self.tick_0.unsqueeze(0).expand(batch_size, self.p_vocab_dims)
         tick_input = tick_input.unsqueeze(1)
         y = tick_input
-#         print(beat_out)
         for i in range(self.beat_num):
             h_tick = self.beat_to_tick_hidden(beat_out[:, i, :])
             h_tick = h_tick.view(batch_size, self.tick_layer_num, -1)
             h_tick = h_tick.transpose(0,1).contiguous()
-#             print(h_tick)
             c_tick = self.beat_to_tick_input(beat_out[:, i, :]).unsqueeze(1)
             for j in range(self.tick_num):
                 y = torch.cat((y, c_tick), -1)
-#                 print("y size:",y.size())
                 y, h_tick = self.tick_gru(y, h_tick)
                 y = y.contiguous().view(y.size(0), -1)
                 y = self.tick_to_note(y)
-#                 print("after embed:", y.size())
                 ys.append(y)
                 y = y.argmax(-1)
-#                 print("argmax y:",y)
                 y = self.d_embedding(y)
                 if self.training and is_train:
                     p = torch.rand(1).item()
                     if p < self.eps:
                         y = gd[:, i * self.tick_num + j, :]
-#                         print("yes")
-#                     else:
-#                         print("no")
                     # update the eps after one batch
                     self.eps = self.decay / (self.decay + torch.exp(self.iteration / self.decay))
                 y = y.unsqueeze(1)
-#                 print("next input:",y.size())
-#                 print(y)
-#                 print(gd[:, i * self.tick_num + j,:])
         return torch.stack(ys, 1)
     def forward(self, px, rx, len_x, gd):
-#         print(px)
-        # px: [batch, seq_len, 1] with p_input number range
-        # rx: [batch, seq_len, r_input]
-        # len_x: [batch, 1] the efficient length of each pitch sequence
-        # gd: [batch, seq_len, 1] groundtruth of the melody sequence
-#         print("vae forward", self.training)
+        """
+        px: [batch, seq_len, 1] with p_input number range
+        rx: [batch, seq_len, r_input]
+        len_x: [batch, 1] the efficient length of each pitch sequence
+        gd: [batch, seq_len, 1] groundtruth of the melody sequence
+        """
         if self.training:
             self.iteration += 1
         p_dis = self.pitch_encoder(px, len_x)
@@ -183,9 +159,7 @@ class SketchVAE(nn.Module):
         zp = p_dis.rsample()
         zr = r_dis.rsample()
         z = torch.cat((zp,zr), -1)
-#         print("z:",zp.size(),zr.size(),z.size())
         recon = self.final_decoder(z, gd)
-#         print("recon:",recon.size())
         return recon, p_dis, r_dis, self.iteration
 
 
