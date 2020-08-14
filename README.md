@@ -38,7 +38,7 @@ To run the code, you need to down the extra material data from this [link](https
 > model_backup.zip: if you only want to skip most process and test the model, you can download the saved parameters for all models we trained.
 
 #### Quick Start: 
-> click the file [1-irish-process.ipynb](/1-irish-process.ipynb) follow from *1-irish-process.ipynb* to *5-2-vae_independent_test.ipynb*
+> click the file [1-irish-process.ipynb](/1-irish-process.ipynb) follow from *1-irish-process.ipynb* to *5-3-bootstrap-sig-test.ipynb*
 
 In each folder, we provide the model python script, or the data loader. And it should be easily recognized by the folder name.
 Below is the introduction of all jupyter notebook files:
@@ -59,6 +59,8 @@ Below is the introduction of all jupyter notebook files:
 * 5-1-loss_and_accuracy.ipynb: experiement concerned with the loss and the accuracy.
 * 5-2-vae_independent_test.ipynb: Three VAE structures independent test
 * 5-3-bootstrap-sig-test.ipynb: The significance test
+
+Among all scripts, 2-1, 2-2, 3-1 are forked most from the original EC^2-VAE and Music InpaintNet repos. 
 
 ## Credit
 Please cite this paper if you want to use this work or base this work for the further project:
