@@ -92,7 +92,7 @@ class SketchVAE(nn.Module):
         padding_px = padding_px.view(padding_px.size(0), -1)
         n_px = padding_px.index_select(0, re_len_idx)
         p_mu = self.p_linear_mu(n_px)
-        p_var = self.p_linear_var(n_px)
+        p_var = self.p_linear_var(n_px).exp_()
         p_dis = Normal(p_mu, p_var)
         return p_dis
     def rhythm_encoder(self, rx):
@@ -100,7 +100,7 @@ class SketchVAE(nn.Module):
         rx = rx.transpose(0,1).contiguous()
         rx = rx.view(rx.size(0), -1)
         r_mu = self.r_linear_mu(rx)
-        r_var = self.r_linear_var(rx)
+        r_var = self.r_linear_var(rx).exp_()
         r_dis = Normal(r_mu, r_var)
         return r_dis
     def final_decoder(self, z, gd, is_train = True):
