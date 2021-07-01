@@ -50,7 +50,7 @@ class RECVAE(nn.Module):
         x = x.transpose_(0,1).contiguous()
         x = x.view(x.size(0), -1)
         mu = self.linear_mu(x)
-        var = self.linear_var(x)
+        var = self.linear_var(x).exp_()
         dis1 = Normal(mu[:,:self.z1_dims], var[:,:self.z1_dims])
         dis2 = Normal(mu[:,self.z1_dims:], var[:,self.z1_dims:])
         return dis1,dis2
