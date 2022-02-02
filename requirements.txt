@@ -3,7 +3,7 @@ matplotlib==3.3.0
 mido==1.2.9
 mistune==0.8.4
 music21==5.7.2
-numpy==1.16.6
+numpy==1.21.0
 pickleshare==0.7.5
 Pillow==9.0.0
 pretty-midi==0.2.9
