@@ -1,7 +1,7 @@
 matplot==0.1.9
 matplotlib==3.3.0
 mido==1.2.9
-mistune==0.8.4
+mistune==2.0.3
 music21==5.7.2
 numpy==1.21.0
 pickleshare==0.7.5
