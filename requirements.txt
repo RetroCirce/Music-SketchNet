@@ -8,7 +8,7 @@ pickleshare==0.7.5
 Pillow==9.0.1
 pretty-midi==0.2.9
 scikit-learn==0.23.1
-scipy==1.5.1
+scipy==1.10.0
 sklearn==0.0
 torch==1.5.1
 torchvision==0.6.1
